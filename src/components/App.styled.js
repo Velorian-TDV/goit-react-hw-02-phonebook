@@ -1,9 +1,29 @@
-import styled from 'styled-components';
+import { styled, createGlobalStyle } from 'styled-components';
 
-const Wrapper = styled.div`
+export const GlobalStyles = createGlobalStyle`
+    * {
+        margin: 0px;
+        padding: 0px;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
 
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        width: 100vw;
+        min-height: 100vh;
+
+        background-color: rgb(232, 255, 255);
+
+        overflow-x: hidden;
+    }
+`
+
+export const Wrapper = styled.div`
     padding: 10px;
-
     min-width: 350px;
 
     border: 1px solid black;
@@ -51,15 +71,18 @@ const Wrapper = styled.div`
         }
     }
 
-    .contacts{
-        margin-top: 20px;
-        
+    .search{
         input{
             padding: 5px;
             border: none;
             border-bottom: 1px solid black;
             outline: none;
         }
+    }
+
+    .contacts{
+        margin-top: 20px;
+        
         ul{
             list-style-type: none;
             margin-top: 20px;
@@ -91,5 +114,3 @@ const Wrapper = styled.div`
         }
     }
 `
-
-export default Wrapper;

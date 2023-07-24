@@ -1,10 +1,12 @@
 import React from 'react';
-import { nanoid } from 'nanoid';
-import Wrapper from './App.styled';
-import Form from './Form';
-import Contacts from './Contacts';
+import { nanoid } from "nanoid";
+import { Wrapper } from './App.styled';
+import { Form } from './Form/Form';
+import { Contacts } from './Contacts/Contacts';
+import { Filter } from './Filter/Filter';
 
 class App extends React.Component {
+
     state = {
         contacts: [
             { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
@@ -12,32 +14,30 @@ class App extends React.Component {
             { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
             { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
         ],
-        filter: '',
+        filter: this.props.filter,
     };
 
-    handleSubmit = (event) => {
-        event.preventDefault();
-        const { name, number } = event.target;
+    addContact = (contactData) => {
+        const { name, number } = contactData;
+        const { contacts } = this.state;
 
-        const exist = this.state.contacts.some(
-            (contact) => {
-                return contact.name === name.value
-            }
+        const exist = contacts.find(
+            (contact) => contact.name === name
         );
 
         if (exist) {
-            return alert(`${name.value} is already in contacts.`);
+            return alert(`${name} is already in contacts.`);
+        } else {
+            const newContact = {
+                id: nanoid(),
+                name: name,
+                number: number,
+            };
+
+            this.setState((prevState) => ({
+                contacts: [...prevState.contacts, newContact],
+            }))
         }
-
-        const newContact = {
-            id: nanoid(),
-            name: name.value,
-            number: number.value,
-        };
-
-        this.setState((prevState) => ({
-            contacts: [...prevState.contacts, newContact],
-        }));
     };
 
     deleteContact = (id) => {
@@ -49,42 +49,30 @@ class App extends React.Component {
     };
 
     searchContact = (event) => {
-        this.setState({ filter: event.target.value });
+        const { target } = event;
+        this.setState({ filter: target.value });
     };
 
-    getContacts = ({ contacts, filter }) => {
-        const filteredContacts = contacts.filter(item => {
-            return item.name.toLowerCase().includes(filter.toLowerCase());
-        });
+    getAllContacts = () => {
+        const { contacts, filter } = this.state;
 
-        const displayContacts = filter === '' ? contacts : filteredContacts;
+        const filteredContacts = contacts.filter(item => item.name.toLowerCase().includes(filter));
+        const displayContacts = filter === undefined ? contacts : filteredContacts;
 
-        return (
-            <ul>
-                {displayContacts.map(({ id, name, number }) => (
-                    <li key={id}>
-                        <p>{name}: {number}</p>
-                        <button
-                            type='button'
-                            name={id}
-                            onClick={() => this.deleteContact(id)}
-                        >Delete</button>
-                    </li>
-                ))}
-            </ul>
-        );
-    };
+        return displayContacts
+    }
 
     render() {
         return (
             <Wrapper>
-                <Form
-                    handle={this.handleSubmit}
-                />
+                <h2>Phonebook</h2>
+                <Form addContact={this.addContact} />
+
+                <h2>Contacts</h2>
+                <Filter search={this.searchContact} />
                 <Contacts
-                    search={this.searchContact}
-                    contacts={this.getContacts}
-                    data={this.state}
+                    getContacts={this.getAllContacts}
+                    deleteContact={this.deleteContact}
                 />
             </Wrapper>
         );
